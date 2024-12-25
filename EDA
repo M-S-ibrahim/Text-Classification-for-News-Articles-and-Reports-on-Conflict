@@ -1,0 +1,122 @@
+import pandas as pd
+
+# Load your dataset
+data = pd.read_csv('conflict_reports.csv')
+
+# Display the first few rows of the dataset
+print(data.head())
+
+# Display basic statistics of the dataset
+print(data.describe())
+
+# Display information about the dataset
+print(data.info())
+
+# Check for missing values
+print(data.isnull().sum())
+
+# Optionally, drop rows with missing values or fill them with a default value
+data = data.dropna()  # or use data.fillna('default_value', inplace=True)
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Plot the distribution of categories
+plt.figure(figsize=(10, 6))
+sns.countplot(data['label'])
+plt.title('Distribution of Categories')
+plt.xlabel('Category')
+plt.ylabel('Count')
+plt.xticks(rotation=45)
+plt.show()
+
+
+# Compute the length of each text entry
+data['text_length'] = data['text'].apply(len)
+
+# Plot the distribution of text lengths
+plt.figure(figsize=(10, 6))
+sns.histplot(data['text_length'], bins=50)
+plt.title('Distribution of Text Lengths')
+plt.xlabel('Text Length')
+plt.ylabel('Frequency')
+plt.show()
+
+# Compute the length of each text entry
+data['text_length'] = data['text'].apply(len)
+
+# Plot the distribution of text lengths
+plt.figure(figsize=(10, 6))
+sns.histplot(data['text_length'], bins=50)
+plt.title('Distribution of Text Lengths')
+plt.xlabel('Text Length')
+plt.ylabel('Frequency')
+plt.show()
+
+from wordcloud import WordCloud
+
+# Generate word clouds for each category
+categories = data['label'].unique()
+for category in categories:
+    text = ' '.join(data[data['label'] == category]['text'])
+    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(text)
+    
+    plt.figure(figsize=(10, 6))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.title(f'Word Cloud for {category}')
+    plt.axis('off')
+    plt.show()
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Create a CountVectorizer instance
+vectorizer = CountVectorizer(stop_words='english', max_features=20)
+
+# Fit and transform the text data
+X = vectorizer.fit_transform(data['text'])
+
+# Convert the result to a DataFrame
+word_counts = pd.DataFrame(X.toarray(), columns=vectorizer.get_feature_names_out())
+
+# Sum the counts of each word
+word_frequencies = word_counts.sum().sort_values(ascending=False)
+
+# Plot the most common words
+plt.figure(figsize=(10, 6))
+sns.barplot(x=word_frequencies.values, y=word_frequencies.index)
+plt.title('Most Common Words')
+plt.xlabel('Frequency')
+plt.ylabel('Word')
+plt.show()
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+# Create a CountVectorizer instance
+vectorizer = CountVectorizer(stop_words='english', max_features=20)
+
+# Fit and transform the text data
+X = vectorizer.fit_transform(data['text'])
+
+# Convert the result to a DataFrame
+word_counts = pd.DataFrame(X.toarray(), columns=vectorizer.get_feature_names_out())
+
+# Sum the counts of each word
+word_frequencies = word_counts.sum().sort_values(ascending=False)
+
+# Plot the most common words
+plt.figure(figsize=(10, 6))
+sns.barplot(x=word_frequencies.values, y=word_frequencies.index)
+plt.title('Most Common Words')
+plt.xlabel('Frequency')
+plt.ylabel('Word')
+plt.show()
+
+
+# Compute the correlation matrix
+correlation_matrix = data.corr()
+
+# Plot the correlation matrix
+plt.figure(figsize=(10, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm')
+plt.title('Correlation Matrix')
+plt.show()
